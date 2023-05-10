@@ -1,8 +1,9 @@
 import socket
 import sys
+import threading
 
 
-class Netcat:
+class NetCat:
     def __init__(self, args, buffer=None):
         self.args = args
         self.buffer = buffer
@@ -39,4 +40,37 @@ class Netcat:
             print('User terminated.')
             self.socket.close()
             sys.exit()
-            
+
+
+    def listen(self):
+        self.socket.bind((self.args.target, self.args.port))
+        self.socket.listen()
+
+        while True:
+            client_socket, _ = self.socket.accept()
+            client_thread = threading.Thread(
+                target=self.handle, args=(client_socket,)
+            )
+            client_thread.start()
+
+
+    def handle(self, client_socket):
+        if self.args.upload:
+            file_buffer = b''
+            while True:
+                try:
+                    data = client_socket.recv(4096)
+                    if data:
+                        file_buffer += data
+                    else:
+                        break
+
+                    with open(self.args.upload, 'wb') as f:
+                        f.write(file_buffer)
+                    message = f'Saved file {self.args.upload}'
+                    client_socket.send(message.encode())
+
+                except Exception as e:
+                    print(f'server killed {e}')
+                    self.socket.close()
+                    sys.exit()

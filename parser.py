@@ -8,6 +8,8 @@ import sys
 import textwrap
 import threading
 
+from Netcat_class import NetCat
+
 
 def ParserFunction():
     parser = argparse.ArgumentParser(

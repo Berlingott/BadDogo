@@ -7,8 +7,4 @@ from netcat import execute
 from parser import ParserFunction
 
 if __name__ == '__main__':
-    #TCP_Client("www.google.com", 80)
-    #UDP_Client("127.0.0.1", 1337)
-    #TCP_Server("0.0.0.0",9998)
     ParserFunction()
-    
